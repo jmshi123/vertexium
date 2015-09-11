@@ -5,9 +5,11 @@ import org.vertexium.Visibility;
 
 public class PropertyPropertySoftDeleteMutation extends PropertySoftDeleteMutation {
     private final Property property;
+    private final Long timestamp;
 
-    public PropertyPropertySoftDeleteMutation(Property property) {
+    public PropertyPropertySoftDeleteMutation(Property property, Long timestamp) {
         this.property = property;
+        this.timestamp = timestamp;
     }
 
     @Override
@@ -23,6 +25,11 @@ public class PropertyPropertySoftDeleteMutation extends PropertySoftDeleteMutati
     @Override
     public Visibility getVisibility() {
         return property.getVisibility();
+    }
+
+    @Override
+    public Long getTimestamp() {
+        return this.timestamp;
     }
 
     public Property getProperty() {

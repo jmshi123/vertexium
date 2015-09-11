@@ -18,7 +18,6 @@ public class AccumuloGraphTestUtils {
             if (connector.tableOperations().exists(graphDirectoryName)) {
                 connector.tableOperations().delete(graphDirectoryName);
             }
-            connector.tableOperations().create(graphDirectoryName, false);
         } catch (Exception e) {
             throw new RuntimeException("Unable to drop graph: " + graphDirectoryName, e);
         }

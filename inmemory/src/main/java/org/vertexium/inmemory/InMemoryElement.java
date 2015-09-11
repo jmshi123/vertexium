@@ -11,6 +11,8 @@ import org.vertexium.util.FilterIterable;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.vertexium.util.IncreasingTime.currentTimeMillis;
+
 public abstract class InMemoryElement<TElement extends InMemoryElement> implements Element {
     private final String id;
     private InMemoryGraph graph;
@@ -338,7 +340,6 @@ public abstract class InMemoryElement<TElement extends InMemoryElement> implemen
             Iterable<PropertyDeleteMutation> propertyDeleteMutations,
             Iterable<PropertySoftDeleteMutation> propertySoftDeleteMutations
     ) {
-        long timestamp = IncreasingTime.currentTimeMillis();
         for (Property property : properties) {
             Object propertyValue = property.getValue();
             if (propertyValue instanceof StreamingPropertyValue) {
@@ -350,6 +351,7 @@ public abstract class InMemoryElement<TElement extends InMemoryElement> implemen
             deleteProperty(propertyDeleteMutation.getKey(), propertyDeleteMutation.getName(), propertyDeleteMutation.getVisibility(), authorizations);
         }
         for (PropertySoftDeleteMutation propertySoftDeleteMutation : propertySoftDeleteMutations) {
+            long timestamp = propertySoftDeleteMutation.getTimestamp() == null ? currentTimeMillis() : propertySoftDeleteMutation.getTimestamp();
             softDeleteProperty(propertySoftDeleteMutation.getKey(), propertySoftDeleteMutation.getName(), timestamp, propertySoftDeleteMutation.getVisibility(), authorizations);
         }
     }

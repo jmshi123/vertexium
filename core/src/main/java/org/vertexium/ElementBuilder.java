@@ -19,7 +19,7 @@ public abstract class ElementBuilder<T extends Element> implements ElementMutati
      * which allows treating the multi-valued nature of properties as only containing a single value. Care must be
      * taken when using this method because properties are not only uniquely identified by just key and name but also
      * visibility so adding properties with the same name and different visibility strings is still permitted.
-     * 
+     * <p/>
      * The added property will also be indexed in the configured search provider. The type of the value
      * will determine how it gets indexed.
      *
@@ -36,7 +36,7 @@ public abstract class ElementBuilder<T extends Element> implements ElementMutati
      * which allows treating the multi-valued nature of properties as only containing a single value. Care must be
      * taken when using this method because properties are not only uniquely identified by just key and name but also
      * visibility so adding properties with the same name and different visibility strings is still permitted.
-     *
+     * <p/>
      * The added property will also be indexed in the configured search provider. The type of the value
      * will determine how it gets indexed.
      *
@@ -51,7 +51,7 @@ public abstract class ElementBuilder<T extends Element> implements ElementMutati
 
     /**
      * Adds or updates a property.
-     *
+     * <p/>
      * The added property will also be indexed in the configured search provider. The type of the value
      * will determine how it gets indexed.
      *
@@ -66,7 +66,7 @@ public abstract class ElementBuilder<T extends Element> implements ElementMutati
 
     /**
      * Adds or updates a property.
-     *
+     * <p/>
      * The added property will also be indexed in the configured search provider. The type of the value
      * will determine how it gets indexed.
      *
@@ -112,7 +112,7 @@ public abstract class ElementBuilder<T extends Element> implements ElementMutati
 
     @Override
     public ElementBuilder<T> softDeleteProperty(Property property) {
-        propertySoftDeletes.add(new PropertyPropertySoftDeleteMutation(property));
+        propertySoftDeletes.add(new PropertyPropertySoftDeleteMutation(property, null));
         return this;
     }
 
@@ -123,8 +123,13 @@ public abstract class ElementBuilder<T extends Element> implements ElementMutati
 
     @Override
     public ElementBuilder<T> softDeleteProperty(String key, String name, Visibility visibility) {
+        return softDeleteProperty(key, name, null, visibility);
+    }
+
+    @Override
+    public ElementBuilder<T> softDeleteProperty(String key, String name, Long timestamp, Visibility visibility) {
         Preconditions.checkNotNull(name, "property name cannot be null for property: " + name + ":" + key);
-        propertySoftDeletes.add(new KeyNameVisibilityPropertySoftDeleteMutation(key, name, visibility));
+        propertySoftDeletes.add(new KeyNameVisibilityPropertySoftDeleteMutation(key, name, timestamp, visibility));
         return this;
     }
 

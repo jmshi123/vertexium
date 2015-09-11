@@ -105,8 +105,12 @@ public abstract class ExistingElementMutationImpl<T extends Element> implements 
 
     @Override
     public ElementMutation<T> softDeleteProperty(Property property) {
+        return softDeleteProperty(property, null);
+    }
+
+    public ElementMutation<T> softDeleteProperty(Property property, Long timestamp) {
         Preconditions.checkNotNull(property, "property cannot be null");
-        propertySoftDeletes.add(new PropertyPropertySoftDeleteMutation(property));
+        propertySoftDeletes.add(new PropertyPropertySoftDeleteMutation(property, timestamp));
         return this;
     }
 
@@ -137,9 +141,14 @@ public abstract class ExistingElementMutationImpl<T extends Element> implements 
 
     @Override
     public ElementMutation<T> softDeleteProperty(String key, String name, Visibility visibility) {
+        return softDeleteProperty(key, name, null, visibility);
+    }
+
+    @Override
+    public ElementMutation<T> softDeleteProperty(String key, String name, Long timestamp, Visibility visibility) {
         Property property = this.element.getProperty(key, name, visibility);
         if (property != null) {
-            softDeleteProperty(property);
+            softDeleteProperty(property, timestamp);
         }
         return this;
     }

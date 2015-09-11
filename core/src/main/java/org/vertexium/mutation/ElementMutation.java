@@ -120,6 +120,16 @@ public interface ElementMutation<T extends Element> {
     ElementMutation<T> softDeleteProperty(String key, String name, Visibility visibility);
 
     /**
+     * Soft deletes a property.
+     *
+     * @param key        the key of the property to soft delete.
+     * @param name       the name of the property to soft delete.
+     * @param timestamp  the timestamp of when the soft delete occured.
+     * @param visibility the visibility of the property to soft delete.
+     */
+    ElementMutation<T> softDeleteProperty(String key, String name, Long timestamp, Visibility visibility);
+
+    /**
      * Gets the properties currently in this mutation.
      */
     Iterable<Property> getProperties();

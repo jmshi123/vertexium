@@ -219,6 +219,14 @@ public class AccumuloGraph extends GraphBaseWithSearchIndex implements Traceable
                     EnumSet<IteratorUtil.IteratorScope> scope = EnumSet.allOf(IteratorUtil.IteratorScope.class);
                     connector.tableOperations().attachIterator(tableName, versioningSettings, scope);
                 }
+
+                IteratorSetting historyCompactingSettings = new IteratorSetting(
+                        ACCUMULO_DEFAULT_VERSIONING_ITERATOR_PRIORITY + 1,
+                        HistoryCompactingIterator.class.getSimpleName(),
+                        HistoryCompactingIterator.class
+                );
+                EnumSet<IteratorUtil.IteratorScope> scope = EnumSet.of(IteratorUtil.IteratorScope.majc, IteratorUtil.IteratorScope.minc);
+                connector.tableOperations().attachIterator(tableName, historyCompactingSettings, scope);
             }
 
             if (hdfsContextClasspath != null) {

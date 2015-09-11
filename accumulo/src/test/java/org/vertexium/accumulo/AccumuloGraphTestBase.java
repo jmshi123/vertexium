@@ -26,8 +26,10 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
 
+import static junit.framework.Assert.*;
 import static junit.framework.TestCase.fail;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 import static org.vertexium.util.IterableUtils.toList;
 
 
@@ -429,6 +431,53 @@ public abstract class AccumuloGraphTestBase extends GraphTestBase {
         } catch (VertexiumInvalidKeyException ex) {
             // ok
         }
+    }
+
+    @Test
+    public void testHistoryCompactingIterator() throws AccumuloSecurityException, TableNotFoundException, AccumuloException {
+        Metadata metadata = new Metadata();
+        long firstTimestamp = new Date().getTime();
+        long timestamp = firstTimestamp;
+
+        graph.prepareVertex("v1", VISIBILITY_EMPTY).addPropertyValue("k1", "prop1", "value1", metadata, timestamp++, VISIBILITY_EMPTY).save(AUTHORIZATIONS_EMPTY);
+        graph.prepareVertex("v1", VISIBILITY_EMPTY).addPropertyValue("k1", "prop1", "value1", metadata, timestamp++, VISIBILITY_EMPTY).save(AUTHORIZATIONS_EMPTY);
+        graph.prepareVertex("v1", VISIBILITY_EMPTY).addPropertyValue("k1", "prop1", "value1", metadata, timestamp++, VISIBILITY_EMPTY).save(AUTHORIZATIONS_EMPTY);
+        graph.flush();
+
+        getGraph().getConnector().tableOperations().compact(getGraph().getVerticesTableName(), null, null, true, true);
+
+        Vertex v1 = graph.getVertex("v1", AUTHORIZATIONS_EMPTY);
+        Property prop1 = v1.getProperty("k1", "prop1");
+        assertNotNull("could not find prop1", prop1);
+        assertEquals(firstTimestamp, prop1.getTimestamp());
+    }
+
+    @Test
+    public void testHistoryCompactingIteratorSoftDelete() throws AccumuloSecurityException, TableNotFoundException, AccumuloException {
+        Metadata metadata = new Metadata();
+        long firstTimestamp = new Date().getTime();
+        long timestamp = firstTimestamp;
+
+        graph.prepareVertex("v1", VISIBILITY_EMPTY).addPropertyValue("k1", "prop1", "value1", metadata, timestamp++, VISIBILITY_EMPTY).save(AUTHORIZATIONS_EMPTY);
+        graph.prepareVertex("v1", VISIBILITY_EMPTY).softDeleteProperty("k1", "prop1", timestamp++, VISIBILITY_EMPTY).save(AUTHORIZATIONS_EMPTY);
+        graph.prepareVertex("v1", VISIBILITY_EMPTY).addPropertyValue("k1", "prop1", "value1", metadata, timestamp++, VISIBILITY_EMPTY).save(AUTHORIZATIONS_EMPTY);
+        graph.flush();
+
+        getGraph().getConnector().tableOperations().compact(getGraph().getVerticesTableName(), null, null, true, true);
+
+        Vertex v1 = graph.getVertex("v1", AUTHORIZATIONS_EMPTY);
+        Property prop1 = v1.getProperty("k1", "prop1");
+        assertNotNull("could not find prop1", prop1);
+        assertEquals(firstTimestamp, prop1.getTimestamp());
+
+        v1 = graph.getVertex("v1", FetchHint.ALL, timestamp - 1, AUTHORIZATIONS_EMPTY);
+        prop1 = v1.getProperty("k1", "prop1");
+        assertNull("found prop1", prop1);
+
+        v1 = graph.getVertex("v1", FetchHint.ALL, timestamp - 2, AUTHORIZATIONS_EMPTY);
+        prop1 = v1.getProperty("k1", "prop1");
+        assertNotNull("could not find prop1", prop1);
+        assertEquals(firstTimestamp, prop1.getTimestamp());
     }
 
     @Override
