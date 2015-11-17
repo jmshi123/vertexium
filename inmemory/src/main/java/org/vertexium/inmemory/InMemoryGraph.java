@@ -13,7 +13,10 @@ import org.vertexium.property.StreamingPropertyValue;
 import org.vertexium.property.StreamingPropertyValueRef;
 import org.vertexium.search.IndexHint;
 import org.vertexium.search.SearchIndex;
-import org.vertexium.util.*;
+import org.vertexium.util.ConvertingIterable;
+import org.vertexium.util.IncreasingTime;
+import org.vertexium.util.IterableUtils;
+import org.vertexium.util.LookAheadIterable;
 
 import java.util.*;
 
@@ -541,6 +544,17 @@ public class InMemoryGraph extends GraphBaseWithSearchIndex {
         }
     }
 
+    public void setPropertyMetadata(
+            InMemoryElement element,
+            InMemoryTableElement inMemoryTableElement,
+            String propertyKey, String propertyName, Visibility propertyVisibility,
+            String metadataKey, Visibility metadataVisibility,
+            Object newValue
+    ) {
+        long timestamp = IncreasingTime.currentTimeMillis();
+        inMemoryTableElement.appendSetPropertyMetadataMutation(propertyKey, propertyName, propertyVisibility, metadataKey, metadataVisibility, newValue, timestamp);
+    }
+
     protected void alterElementVisibility(InMemoryTableElement inMemoryTableElement, Visibility newEdgeVisibility) {
         inMemoryTableElement.appendAlterVisibilityMutation(newEdgeVisibility);
     }
@@ -580,7 +594,7 @@ public class InMemoryGraph extends GraphBaseWithSearchIndex {
                 throw new VertexiumException("Could not find property " + apm.getPropertyKey() + ":" + apm.getPropertyName());
             }
 
-            property.getMetadata().add(apm.getMetadataName(), apm.getNewValue(), apm.getMetadataVisibility());
+            property.getMetadata().add(apm.getMetadataKey(), apm.getNewValue(), apm.getMetadataVisibility());
         }
     }
 

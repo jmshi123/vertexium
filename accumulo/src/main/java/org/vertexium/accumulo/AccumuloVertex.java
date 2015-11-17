@@ -12,10 +12,7 @@ import org.vertexium.accumulo.iterator.model.EdgesWithCount;
 import org.vertexium.accumulo.iterator.model.EdgesWithEdgeInfo;
 import org.vertexium.accumulo.iterator.model.ElementData;
 import org.vertexium.accumulo.util.DataInputStreamUtils;
-import org.vertexium.mutation.ExistingElementMutation;
-import org.vertexium.mutation.ExistingElementMutationImpl;
-import org.vertexium.mutation.PropertyDeleteMutation;
-import org.vertexium.mutation.PropertySoftDeleteMutation;
+import org.vertexium.mutation.*;
 import org.vertexium.query.VertexQuery;
 import org.vertexium.util.ConvertingIterable;
 import org.vertexium.util.FilterIterable;
@@ -49,6 +46,7 @@ public class AccumuloVertex extends AccumuloElement implements Vertex {
             Iterable<Property> properties,
             Iterable<PropertyDeleteMutation> propertyDeleteMutations,
             Iterable<PropertySoftDeleteMutation> propertySoftDeleteMutations,
+            Iterable<SetPropertyMetadata> setPropertyMetadatas,
             Iterable<Visibility> hiddenVisibilities,
             long timestamp,
             Authorizations authorizations
@@ -60,6 +58,7 @@ public class AccumuloVertex extends AccumuloElement implements Vertex {
                 properties,
                 propertyDeleteMutations,
                 propertySoftDeleteMutations,
+                setPropertyMetadatas,
                 hiddenVisibilities,
                 new EdgesWithEdgeInfo(),
                 new EdgesWithEdgeInfo(),
@@ -75,6 +74,7 @@ public class AccumuloVertex extends AccumuloElement implements Vertex {
             Iterable<Property> properties,
             Iterable<PropertyDeleteMutation> propertyDeleteMutations,
             Iterable<PropertySoftDeleteMutation> propertySoftDeleteMutations,
+            Iterable<SetPropertyMetadata> setPropertyMetadatas,
             Iterable<Visibility> hiddenVisibilities,
             Edges inEdges,
             Edges outEdges,
@@ -88,6 +88,7 @@ public class AccumuloVertex extends AccumuloElement implements Vertex {
                 properties,
                 propertyDeleteMutations,
                 propertySoftDeleteMutations,
+                setPropertyMetadatas,
                 hiddenVisibilities,
                 timestamp,
                 authorizations
@@ -103,6 +104,7 @@ public class AccumuloVertex extends AccumuloElement implements Vertex {
             Iterable<Property> properties;
             Iterable<PropertyDeleteMutation> propertyDeleteMutations = new ArrayList<>();
             Iterable<PropertySoftDeleteMutation> propertySoftDeleteMutations = new ArrayList<>();
+            Iterable<SetPropertyMetadata> setPropertyMetadatas = null;
             Iterable<Visibility> hiddenVisibilities;
             Edges inEdges;
             Edges outEdges;
@@ -132,6 +134,7 @@ public class AccumuloVertex extends AccumuloElement implements Vertex {
                     properties,
                     propertyDeleteMutations,
                     propertySoftDeleteMutations,
+                    setPropertyMetadatas,
                     hiddenVisibilities,
                     inEdges,
                     outEdges,

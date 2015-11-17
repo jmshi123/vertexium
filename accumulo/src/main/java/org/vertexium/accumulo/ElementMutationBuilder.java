@@ -16,6 +16,7 @@ import org.vertexium.id.NameSubstitutionStrategy;
 import org.vertexium.mutation.PropertyDeleteMutation;
 import org.vertexium.mutation.PropertyPropertyDeleteMutation;
 import org.vertexium.mutation.PropertySoftDeleteMutation;
+import org.vertexium.mutation.SetPropertyMetadata;
 import org.vertexium.property.StreamingPropertyValue;
 import org.vertexium.property.StreamingPropertyValueRef;
 import org.vertexium.util.*;
@@ -67,6 +68,11 @@ public abstract class ElementMutationBuilder {
         }
         for (Property property : vertex.getProperties()) {
             addPropertyToMutation(vertex.getGraph(), m, vertexRowKey, property);
+        }
+        if (vertex.getSetPropertyMetadatas() != null) {
+            for (SetPropertyMetadata setPropertyMetadata : vertex.getSetPropertyMetadatas()) {
+                addSetPropertyMetadataToMutation(m, vertexRowKey, setPropertyMetadata);
+            }
         }
         return m;
     }
@@ -331,6 +337,17 @@ public abstract class ElementMutationBuilder {
         }
     }
 
+    private void addSetPropertyMetadataToMutation(Mutation m, String vertexRowKey, SetPropertyMetadata setPropertyMetadata) {
+        Text columnQualifier = getPropertyMetadataColumnQualifierText(
+                setPropertyMetadata.getPropertyName(),
+                setPropertyMetadata.getPropertyKey(),
+                setPropertyMetadata.getPropertyVisibility().getVisibilityString(),
+                setPropertyMetadata.getMetadataKey()
+        );
+        ColumnVisibility metadataVisibility = visibilityToAccumuloVisibility(setPropertyMetadata.getMetadataVisibility());
+        addPropertyMetadataItemAddToMutation(m, columnQualifier, metadataVisibility, setPropertyMetadata.getTimestamp(), setPropertyMetadata.getNewValue());
+    }
+
     private void addPropertyMetadataItemToMutation(Mutation m, Property property, Metadata.Entry metadataItem) {
         Text columnQualifier = getPropertyMetadataColumnQualifierText(property, metadataItem);
         ColumnVisibility metadataVisibility = visibilityToAccumuloVisibility(metadataItem.getVisibility());
@@ -355,6 +372,11 @@ public abstract class ElementMutationBuilder {
         final String propertyKey = property.getKey();
         final String visibilityString = property.getVisibility().getVisibilityString();
         final String metadataKey = metadataItem.getKey();
+        return getPropertyMetadataColumnQualifierText(propertyName, propertyKey, visibilityString, metadataKey);
+
+    }
+
+    private Text getPropertyMetadataColumnQualifierText(String propertyName, String propertyKey, String visibilityString, String metadataKey) {
         //noinspection StringBufferReplaceableByString - for speed we use StringBuilder
         StringBuilder keyBuilder = new StringBuilder(propertyName.length() + propertyKey.length() + visibilityString.length() + metadataKey.length());
         keyBuilder.append(getNameSubstitutionStrategy().deflate(propertyName));

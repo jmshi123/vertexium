@@ -3,6 +3,7 @@ package org.vertexium.mutation;
 import org.vertexium.*;
 import org.vertexium.property.MutablePropertyImpl;
 import org.vertexium.search.IndexHint;
+import org.vertexium.util.IncreasingTime;
 import org.vertexium.util.Preconditions;
 
 import java.util.ArrayList;
@@ -168,19 +169,53 @@ public abstract class ExistingElementMutationImpl<T extends Element> implements 
     }
 
     @Override
-    public ExistingElementMutation<T> setPropertyMetadata(Property property, String metadataName, Object newValue, Visibility visibility) {
-        this.setPropertyMetadatas.add(new SetPropertyMetadata(property.getKey(), property.getName(), property.getVisibility(), metadataName, newValue, visibility));
+    public ExistingElementMutation<T> setPropertyMetadata(Property property, String metadataKey, Object newValue, Visibility visibility) {
+        this.setPropertyMetadatas.add(new SetPropertyMetadata(
+                property.getKey(),
+                property.getName(),
+                property.getVisibility(),
+                metadataKey,
+                newValue,
+                visibility,
+                IncreasingTime.currentTimeMillis()
+        ));
         return this;
     }
 
     @Override
-    public ExistingElementMutation<T> setPropertyMetadata(String propertyName, String metadataName, Object newValue, Visibility visibility) {
-        return setPropertyMetadata(DEFAULT_KEY, propertyName, metadataName, newValue, visibility);
+    public ExistingElementMutation<T> setPropertyMetadata(String propertyName, String metadataKey, Object newValue, Visibility visibility) {
+        return setPropertyMetadata(DEFAULT_KEY, propertyName, metadataKey, newValue, visibility);
     }
 
     @Override
-    public ExistingElementMutation<T> setPropertyMetadata(String propertyKey, String propertyName, String metadataName, Object newValue, Visibility visibility) {
-        this.setPropertyMetadatas.add(new SetPropertyMetadata(propertyKey, propertyName, null, metadataName, newValue, visibility));
+    public ExistingElementMutation<T> setPropertyMetadata(
+            String propertyKey,
+            String propertyName,
+            String metadataKey,
+            Object newValue,
+            Visibility visibility
+    ) {
+        return setPropertyMetadata(propertyKey, propertyName, null, metadataKey, newValue, visibility);
+    }
+
+    @Override
+    public ExistingElementMutation<T> setPropertyMetadata(
+            String propertyKey,
+            String propertyName,
+            Visibility propertyVisibility,
+            String metadataKey,
+            Object newValue,
+            Visibility visibility
+    ) {
+        this.setPropertyMetadatas.add(new SetPropertyMetadata(
+                propertyKey,
+                propertyName,
+                propertyVisibility,
+                metadataKey,
+                newValue,
+                visibility,
+                IncreasingTime.currentTimeMillis()
+        ));
         return this;
     }
 

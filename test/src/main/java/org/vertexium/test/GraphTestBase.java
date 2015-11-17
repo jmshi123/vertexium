@@ -3490,7 +3490,7 @@ public abstract class GraphTestBase {
 
         Vertex v1 = graph.getVertex("v1", AUTHORIZATIONS_A);
         v1.prepareMutation()
-                .setPropertyMetadata("prop1", "prop1_key1", "valueNew", VISIBILITY_EMPTY)
+                .setPropertyMetadata(ElementMutation.DEFAULT_KEY, "prop1", VISIBILITY_EMPTY, "prop1_key1", "valueNew", VISIBILITY_EMPTY)
                 .save(AUTHORIZATIONS_A_AND_B);
         graph.flush();
         assertEquals("valueNew", v1.getProperty("prop1").getMetadata().getEntry("prop1_key1", VISIBILITY_EMPTY).getValue());
@@ -3500,13 +3500,24 @@ public abstract class GraphTestBase {
 
         v1 = graph.getVertex("v1", AUTHORIZATIONS_A);
         v1.prepareMutation()
-                .setPropertyMetadata("prop2", "prop2_key1", "valueNew", VISIBILITY_EMPTY)
+                .setPropertyMetadata(ElementMutation.DEFAULT_KEY, "prop2", VISIBILITY_EMPTY, "prop2_key1", "valueNew", VISIBILITY_EMPTY)
                 .save(AUTHORIZATIONS_A_AND_B);
         graph.flush();
         assertEquals("valueNew", v1.getProperty("prop2").getMetadata().getEntry("prop2_key1", VISIBILITY_EMPTY).getValue());
 
         v1 = graph.getVertex("v1", AUTHORIZATIONS_A);
         assertEquals("valueNew", v1.getProperty("prop2").getMetadata().getEntry("prop2_key1", VISIBILITY_EMPTY).getValue());
+
+        // update using blind vertex write
+        graph.prepareVertex("v1", VISIBILITY_A)
+                .setPropertyMetadata(ElementMutation.DEFAULT_KEY, "prop1", VISIBILITY_EMPTY, "prop1_key2", "new key2 value", VISIBILITY_EMPTY)
+                .save(AUTHORIZATIONS_A_AND_B);
+        graph.flush();
+
+        printTables(AUTHORIZATIONS_A_AND_B);
+
+        v1 = graph.getVertex("v1", AUTHORIZATIONS_A);
+        assertEquals("new key2 value", v1.getProperty("prop1").getMetadata().getEntry("prop1_key2", VISIBILITY_EMPTY).getValue());
     }
 
     @Test
@@ -4552,4 +4563,8 @@ public abstract class GraphTestBase {
     }
 
     protected abstract boolean isEdgeBoostSupported();
+
+    protected void printTables(Authorizations authorizations) {
+        System.out.println("printTables not supported");
+    }
 }

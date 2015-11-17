@@ -72,6 +72,51 @@ public interface ElementMutation<T extends Element> {
     ElementMutation<T> addPropertyValue(String key, String name, Object value, Metadata metadata, Long timestamp, Visibility visibility);
 
     /**
+     * Sets a property metadata value on a property.
+     *
+     * @param property    The property to mutate.
+     * @param metadataKey The name of the metadata.
+     * @param newValue    The new value.
+     * @param visibility  The visibility of the metadata item
+     */
+    ElementMutation<T> setPropertyMetadata(Property property, String metadataKey, Object newValue, Visibility visibility);
+
+    /**
+     * Sets a property metadata value on a property.
+     *
+     * @param propertyKey  The key of a multivalued property.
+     * @param propertyName The name of the property.
+     * @param metadataKey  The name of the metadata.
+     * @param newValue     The new value.
+     * @param visibility   The visibility of the metadata item
+     */
+    @Deprecated
+    ElementMutation<T> setPropertyMetadata(String propertyKey, String propertyName, String metadataKey, Object newValue, Visibility visibility);
+
+    /**
+     * Sets a property metadata value on a property.
+     *
+     * @param propertyKey        The key of a multivalued property.
+     * @param propertyName       The name of the property.
+     * @param propertyVisibility The visibility of the property.
+     * @param metadataKey        The name of the metadata.
+     * @param newValue           The new value.
+     * @param visibility         The visibility of the metadata item
+     */
+    ElementMutation<T> setPropertyMetadata(String propertyKey, String propertyName, Visibility propertyVisibility, String metadataKey, Object newValue, Visibility visibility);
+
+    /**
+     * Sets a property metadata value on a property.
+     *
+     * @param propertyName The name of the property.
+     * @param metadataKey The name of the metadata.
+     * @param newValue     The new value.
+     * @param visibility   The visibility of the metadata item
+     */
+    @Deprecated
+    ElementMutation<T> setPropertyMetadata(String propertyName, String metadataKey, Object newValue, Visibility visibility);
+
+    /**
      * Deletes a property.
      *
      * @param property the property to delete.

@@ -1,3 +1,7 @@
+# v2.2.3
+
+* Support updating metadata on properties via a mutation
+
 # v2.2.2
 
 * fix property definition bug in map reduce code

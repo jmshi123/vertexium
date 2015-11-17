@@ -3,6 +3,7 @@ package org.vertexium;
 import org.vertexium.mutation.*;
 import org.vertexium.property.MutablePropertyImpl;
 import org.vertexium.search.IndexHint;
+import org.vertexium.util.IncreasingTime;
 import org.vertexium.util.Preconditions;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ public abstract class ElementBuilder<T extends Element> implements ElementMutati
     private final List<Property> properties = new ArrayList<>();
     private final List<PropertyDeleteMutation> propertyDeletes = new ArrayList<>();
     private final List<PropertySoftDeleteMutation> propertySoftDeletes = new ArrayList<>();
+    private final List<SetPropertyMetadata> setPropertyMetadatas = new ArrayList<>();
     private IndexHint indexHint = IndexHint.INDEX;
 
     /**
@@ -19,7 +21,7 @@ public abstract class ElementBuilder<T extends Element> implements ElementMutati
      * which allows treating the multi-valued nature of properties as only containing a single value. Care must be
      * taken when using this method because properties are not only uniquely identified by just key and name but also
      * visibility so adding properties with the same name and different visibility strings is still permitted.
-     * 
+     * <p/>
      * The added property will also be indexed in the configured search provider. The type of the value
      * will determine how it gets indexed.
      *
@@ -36,7 +38,7 @@ public abstract class ElementBuilder<T extends Element> implements ElementMutati
      * which allows treating the multi-valued nature of properties as only containing a single value. Care must be
      * taken when using this method because properties are not only uniquely identified by just key and name but also
      * visibility so adding properties with the same name and different visibility strings is still permitted.
-     *
+     * <p/>
      * The added property will also be indexed in the configured search provider. The type of the value
      * will determine how it gets indexed.
      *
@@ -51,7 +53,7 @@ public abstract class ElementBuilder<T extends Element> implements ElementMutati
 
     /**
      * Adds or updates a property.
-     *
+     * <p/>
      * The added property will also be indexed in the configured search provider. The type of the value
      * will determine how it gets indexed.
      *
@@ -66,7 +68,7 @@ public abstract class ElementBuilder<T extends Element> implements ElementMutati
 
     /**
      * Adds or updates a property.
-     *
+     * <p/>
      * The added property will also be indexed in the configured search provider. The type of the value
      * will determine how it gets indexed.
      *
@@ -89,6 +91,52 @@ public abstract class ElementBuilder<T extends Element> implements ElementMutati
             throw new NullPointerException("property value cannot be null for property: " + name + ":" + key);
         }
         this.properties.add(new MutablePropertyImpl(key, name, value, metadata, timestamp, null, visibility));
+        return this;
+    }
+
+    @Override
+    public ElementBuilder<T> setPropertyMetadata(Property property, String metadataKey, Object newValue, Visibility visibility) {
+        this.setPropertyMetadatas.add(new SetPropertyMetadata(
+                property.getKey(),
+                property.getName(),
+                property.getVisibility(),
+                metadataKey,
+                newValue,
+                visibility,
+                IncreasingTime.currentTimeMillis()
+        ));
+        return this;
+    }
+
+    @Override
+    @Deprecated
+    public ElementBuilder<T> setPropertyMetadata(String propertyName, String metadataKey, Object newValue, Visibility visibility) {
+        return setPropertyMetadata(DEFAULT_KEY, propertyName, metadataKey, newValue, visibility);
+    }
+
+    @Override
+    public ElementBuilder<T> setPropertyMetadata(String propertyKey, String propertyName, String metadataKey, Object newValue, Visibility visibility) {
+        return setPropertyMetadata(propertyKey, propertyName, new Visibility(""), metadataKey, newValue, visibility);
+    }
+
+    @Override
+    public ElementBuilder<T> setPropertyMetadata(
+            String propertyKey,
+            String propertyName,
+            Visibility propertyVisibility,
+            String metadataKey,
+            Object newValue,
+            Visibility visibility
+    ) {
+        this.setPropertyMetadatas.add(new SetPropertyMetadata(
+                propertyKey,
+                propertyName,
+                propertyVisibility,
+                metadataKey,
+                newValue,
+                visibility,
+                IncreasingTime.currentTimeMillis()
+        ));
         return this;
     }
 
@@ -145,6 +193,10 @@ public abstract class ElementBuilder<T extends Element> implements ElementMutati
 
     public Iterable<PropertySoftDeleteMutation> getPropertySoftDeletes() {
         return propertySoftDeletes;
+    }
+
+    public Iterable<SetPropertyMetadata> getSetPropertyMetadatas() {
+        return setPropertyMetadatas;
     }
 
     public IndexHint getIndexHint() {

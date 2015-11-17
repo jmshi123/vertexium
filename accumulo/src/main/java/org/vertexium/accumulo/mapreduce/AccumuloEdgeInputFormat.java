@@ -17,6 +17,7 @@ import org.vertexium.accumulo.iterator.model.EdgeElementData;
 import org.vertexium.accumulo.iterator.model.FetchHint;
 import org.vertexium.mutation.PropertyDeleteMutation;
 import org.vertexium.mutation.PropertySoftDeleteMutation;
+import org.vertexium.mutation.SetPropertyMetadata;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -42,6 +43,7 @@ public class AccumuloEdgeInputFormat extends AccumuloElementInputFormatBase<Edge
             Iterable<Property> properties = makePropertiesFromElementData(graph, edgeElementData, fetchHints);
             Iterable<PropertyDeleteMutation> propertyDeleteMutations = null;
             Iterable<PropertySoftDeleteMutation> propertySoftDeleteMutations = null;
+            Iterable<SetPropertyMetadata> setPropertyMetadatas = null;
             Iterable<Visibility> hiddenVisibilities = Iterables.transform(edgeElementData.hiddenVisibilities, new Function<Text, Visibility>() {
                 @Nullable
                 @Override
@@ -60,6 +62,7 @@ public class AccumuloEdgeInputFormat extends AccumuloElementInputFormatBase<Edge
                     properties,
                     propertyDeleteMutations,
                     propertySoftDeleteMutations,
+                    setPropertyMetadatas,
                     hiddenVisibilities,
                     edgeElementData.timestamp,
                     authorizations

@@ -111,6 +111,7 @@ public abstract class ElementMapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> extends Ma
                         getProperties(),
                         getPropertyDeletes(),
                         getPropertySoftDeletes(),
+                        getSetPropertyMetadatas(),
                         hiddenVisibilities,
                         timestampLong,
                         authorizations
@@ -176,6 +177,7 @@ public abstract class ElementMapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> extends Ma
                         getProperties(),
                         getPropertyDeletes(),
                         getPropertySoftDeletes(),
+                        getSetPropertyMetadatas(),
                         null,
                         timestampLong,
                         authorizations
@@ -213,6 +215,7 @@ public abstract class ElementMapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> extends Ma
                         getProperties(),
                         getPropertyDeletes(),
                         getPropertySoftDeletes(),
+                        getSetPropertyMetadatas(),
                         null,
                         timestampLong,
                         authorizations

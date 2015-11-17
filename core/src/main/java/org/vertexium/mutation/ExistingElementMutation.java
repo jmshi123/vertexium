@@ -38,37 +38,6 @@ public interface ExistingElementMutation<T extends Element> extends ElementMutat
     ExistingElementMutation<T> alterElementVisibility(Visibility visibility);
 
     /**
-     * Sets a property metadata value on a property.
-     *
-     * @param property     The property to mutate.
-     * @param metadataName The name of the metadata.
-     * @param newValue     The new value.
-     * @param visibility   The visibility of the metadata item
-     */
-    ExistingElementMutation<T> setPropertyMetadata(Property property, String metadataName, Object newValue, Visibility visibility);
-
-    /**
-     * Sets a property metadata value on a property.
-     *
-     * @param propertyKey  The key of a multivalued property.
-     * @param propertyName The name of the property.
-     * @param metadataName The name of the metadata.
-     * @param newValue     The new value.
-     * @param visibility   The visibility of the metadata item
-     */
-    ExistingElementMutation<T> setPropertyMetadata(String propertyKey, String propertyName, String metadataName, Object newValue, Visibility visibility);
-
-    /**
-     * Sets a property metadata value on a property.
-     *
-     * @param propertyName The name of the property.
-     * @param metadataName The name of the metadata.
-     * @param newValue     The new value.
-     * @param visibility   The visibility of the metadata item
-     */
-    ExistingElementMutation<T> setPropertyMetadata(String propertyName, String metadataName, Object newValue, Visibility visibility);
-
-    /**
      * Permanently deletes all default properties with that name irregardless of visibility.
      *
      * @param name the property name to delete.

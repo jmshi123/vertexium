@@ -308,6 +308,7 @@ public class AccumuloGraph extends GraphBaseWithSearchIndex implements Traceable
                         getProperties(),
                         getPropertyDeletes(),
                         getPropertySoftDeletes(),
+                        getSetPropertyMetadatas(),
                         hiddenVisibilities,
                         timestampLong,
                         authorizations
@@ -675,6 +676,7 @@ public class AccumuloGraph extends GraphBaseWithSearchIndex implements Traceable
                 edgeBuilder.getProperties(),
                 edgeBuilder.getPropertyDeletes(),
                 edgeBuilder.getPropertySoftDeletes(),
+                edgeBuilder.getSetPropertyMetadatas(),
                 hiddenVisibilities,
                 timestamp,
                 authorizations
@@ -1609,7 +1611,7 @@ public class AccumuloGraph extends GraphBaseWithSearchIndex implements Traceable
             if (property == null) {
                 throw new VertexiumException(String.format("Could not find property %s:%s(%s)", apm.getPropertyKey(), apm.getPropertyName(), apm.getPropertyVisibility()));
             }
-            property.getMetadata().add(apm.getMetadataName(), apm.getNewValue(), apm.getMetadataVisibility());
+            property.getMetadata().add(apm.getMetadataKey(), apm.getNewValue(), apm.getMetadataVisibility());
             propertiesToSave.add(property);
         }
 

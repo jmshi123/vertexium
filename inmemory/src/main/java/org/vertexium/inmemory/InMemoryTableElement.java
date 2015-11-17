@@ -236,6 +236,12 @@ public abstract class InMemoryTableElement<TElement extends InMemoryElement> imp
             } else if (m instanceof MarkPropertyVisibleMutation) {
                 hidden = false;
                 hiddenVisibilities.remove(m.getVisibility());
+            } else if (m instanceof SetPropertyMetadataMutation) {
+                if (metadata == null) {
+                    metadata = new Metadata();
+                }
+                SetPropertyMetadataMutation spmm = (SetPropertyMetadataMutation) m;
+                metadata.add(spmm.getMetadataKey(), spmm.getNewValue(), spmm.getVisibility());
             } else {
                 throw new VertexiumException("Unhandled PropertyMutation: " + m.getClass().getName());
             }
@@ -321,6 +327,18 @@ public abstract class InMemoryTableElement<TElement extends InMemoryElement> imp
             timestamp = IncreasingTime.currentTimeMillis();
         }
         this.mutations.add(new AddPropertyValueMutation(timestamp, key, name, value, metadata, visibility));
+    }
+
+    public void appendSetPropertyMetadataMutation(
+            String propertyKey, String propertyName, Visibility propertyVisibility,
+            String metadataKey, Visibility metadataVisibility,
+            Object newValue,
+            Long timestamp
+    ) {
+        if (timestamp == null) {
+            timestamp = IncreasingTime.currentTimeMillis();
+        }
+        this.mutations.add(new SetPropertyMetadataMutation(timestamp, propertyKey, propertyName, propertyVisibility, metadataKey, metadataVisibility, newValue));
     }
 
     public void appendAlterEdgeLabelMutation(String newEdgeLabel) {

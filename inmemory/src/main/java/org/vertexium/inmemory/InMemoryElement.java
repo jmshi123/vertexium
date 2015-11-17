@@ -362,7 +362,8 @@ public abstract class InMemoryElement<TElement extends InMemoryElement> implemen
         updatePropertiesInternal(
                 edgeBuilder.getProperties(),
                 edgeBuilder.getPropertyDeletes(),
-                edgeBuilder.getPropertySoftDeletes()
+                edgeBuilder.getPropertySoftDeletes(),
+                edgeBuilder.getSetPropertyMetadatas()
         );
     }
 
@@ -370,14 +371,16 @@ public abstract class InMemoryElement<TElement extends InMemoryElement> implemen
         updatePropertiesInternal(
                 edgeBuilder.getProperties(),
                 edgeBuilder.getPropertyDeletes(),
-                edgeBuilder.getPropertySoftDeletes()
+                edgeBuilder.getPropertySoftDeletes(),
+                edgeBuilder.getSetPropertyMetadatas()
         );
     }
 
     protected void updatePropertiesInternal(
             Iterable<Property> properties,
             Iterable<PropertyDeleteMutation> propertyDeleteMutations,
-            Iterable<PropertySoftDeleteMutation> propertySoftDeleteMutations
+            Iterable<PropertySoftDeleteMutation> propertySoftDeleteMutations,
+            Iterable<SetPropertyMetadata> setPropertyMetadatas
     ) {
         long timestamp = IncreasingTime.currentTimeMillis();
         for (Property property : properties) {
@@ -388,6 +391,18 @@ public abstract class InMemoryElement<TElement extends InMemoryElement> implemen
         }
         for (PropertySoftDeleteMutation propertySoftDeleteMutation : propertySoftDeleteMutations) {
             softDeleteProperty(propertySoftDeleteMutation.getKey(), propertySoftDeleteMutation.getName(), timestamp, propertySoftDeleteMutation.getVisibility(), authorizations);
+        }
+        for (SetPropertyMetadata setPropertyMetadata : setPropertyMetadatas) {
+            getGraph().setPropertyMetadata(
+                    this,
+                    inMemoryTableElement,
+                    setPropertyMetadata.getPropertyKey(),
+                    setPropertyMetadata.getPropertyName(),
+                    setPropertyMetadata.getPropertyVisibility(),
+                    setPropertyMetadata.getMetadataKey(),
+                    setPropertyMetadata.getMetadataVisibility(),
+                    setPropertyMetadata.getNewValue()
+            );
         }
     }
 
@@ -402,13 +417,15 @@ public abstract class InMemoryElement<TElement extends InMemoryElement> implemen
         Iterable<Property> properties = mutation.getProperties();
         Iterable<PropertyDeleteMutation> propertyDeleteMutations = mutation.getPropertyDeletes();
         Iterable<PropertySoftDeleteMutation> propertySoftDeleteMutations = mutation.getPropertySoftDeletes();
+        Iterable<SetPropertyMetadata> setPropertyMetadatas = mutation.getSetPropertyMetadatas();
 
         overridePropertyTimestamps(properties);
 
         updatePropertiesInternal(
                 properties,
                 propertyDeleteMutations,
-                propertySoftDeleteMutations
+                propertySoftDeleteMutations,
+                setPropertyMetadatas
         );
 
         InMemoryGraph graph = getGraph();

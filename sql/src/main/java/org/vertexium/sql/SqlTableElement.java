@@ -97,6 +97,12 @@ public abstract class SqlTableElement<TElement extends InMemoryElement>
     }
 
     @Override
+    public void appendSetPropertyMetadataMutation(String propertyKey, String propertyName, Visibility propertyVisibility, String metadataKey, Visibility metadataVisibility, Object newValue, Long timestamp) {
+        super.appendSetPropertyMetadataMutation(propertyKey, propertyName, propertyVisibility, metadataKey, metadataVisibility, newValue, timestamp);
+        store();
+    }
+
+    @Override
     public void appendAlterEdgeLabelMutation(String newEdgeLabel) {
         super.appendAlterEdgeLabelMutation(newEdgeLabel);
         store();

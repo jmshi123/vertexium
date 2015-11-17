@@ -4,14 +4,13 @@ import org.apache.accumulo.core.data.Value;
 import org.apache.hadoop.io.Text;
 import org.vertexium.*;
 import org.vertexium.accumulo.iterator.ElementIterator;
-import org.vertexium.mutation.EdgeMutation;
-import org.vertexium.mutation.ExistingElementMutationImpl;
-import org.vertexium.mutation.PropertyDeleteMutation;
-import org.vertexium.mutation.PropertySoftDeleteMutation;
+import org.vertexium.mutation.*;
 import org.vertexium.property.MutableProperty;
 import org.vertexium.util.IncreasingTime;
+import org.vertexium.util.IterableUtils;
 
 import java.io.Serializable;
+import java.util.List;
 
 public abstract class AccumuloElement extends ElementBase implements Serializable, HasTimestamp {
     private static final long serialVersionUID = 1L;
@@ -30,6 +29,7 @@ public abstract class AccumuloElement extends ElementBase implements Serializabl
     public static final Text CQ_HIDDEN = ElementIterator.CQ_HIDDEN;
     public static final Text METADATA_COLUMN_FAMILY = ElementIterator.METADATA_COLUMN_FAMILY;
     public static final Text METADATA_COLUMN_QUALIFIER = ElementIterator.METADATA_COLUMN_QUALIFIER;
+    private final List<SetPropertyMetadata> setPropertyMetadatas;
 
     protected AccumuloElement(
             Graph graph,
@@ -38,6 +38,7 @@ public abstract class AccumuloElement extends ElementBase implements Serializabl
             Iterable<Property> properties,
             Iterable<PropertyDeleteMutation> propertyDeleteMutations,
             Iterable<PropertySoftDeleteMutation> propertySoftDeleteMutations,
+            Iterable<SetPropertyMetadata> setPropertyMetadatas,
             Iterable<Visibility> hiddenVisibilities,
             long timestamp,
             Authorizations authorizations
@@ -49,10 +50,16 @@ public abstract class AccumuloElement extends ElementBase implements Serializabl
                 properties,
                 propertyDeleteMutations,
                 propertySoftDeleteMutations,
+                setPropertyMetadatas,
                 hiddenVisibilities,
                 timestamp,
                 authorizations
         );
+        if (setPropertyMetadatas != null) {
+            this.setPropertyMetadatas = IterableUtils.toList(setPropertyMetadatas);
+        } else {
+            this.setPropertyMetadatas = null;
+        }
     }
 
     @Override
@@ -130,10 +137,11 @@ public abstract class AccumuloElement extends ElementBase implements Serializabl
         Iterable<PropertyDeleteMutation> propertyDeletes = mutation.getPropertyDeletes();
         Iterable<PropertySoftDeleteMutation> propertySoftDeletes = mutation.getPropertySoftDeletes();
         Iterable<Property> properties = mutation.getProperties();
+        Iterable<SetPropertyMetadata> setPropertyMetadatas = mutation.getSetPropertyMetadatas();
 
         overridePropertyTimestamps(properties);
 
-        updatePropertiesInternal(properties, propertyDeletes, propertySoftDeletes);
+        updatePropertiesInternal(properties, propertyDeletes, propertySoftDeletes, setPropertyMetadatas);
         getGraph().saveProperties(
                 (AccumuloElement) mutation.getElement(),
                 properties,
@@ -168,5 +176,9 @@ public abstract class AccumuloElement extends ElementBase implements Serializabl
                 ((MutableProperty) property).setTimestamp(IncreasingTime.currentTimeMillis());
             }
         }
+    }
+
+    List<SetPropertyMetadata> getSetPropertyMetadatas() {
+        return setPropertyMetadatas;
     }
 }

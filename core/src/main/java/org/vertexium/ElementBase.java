@@ -1,9 +1,6 @@
 package org.vertexium;
 
-import org.vertexium.mutation.ElementMutation;
-import org.vertexium.mutation.ExistingElementMutation;
-import org.vertexium.mutation.PropertyDeleteMutation;
-import org.vertexium.mutation.PropertySoftDeleteMutation;
+import org.vertexium.mutation.*;
 import org.vertexium.property.MutableProperty;
 import org.vertexium.property.MutablePropertyImpl;
 import org.vertexium.property.PropertyValue;
@@ -34,6 +31,7 @@ public abstract class ElementBase implements Element {
             Iterable<Property> properties,
             Iterable<PropertyDeleteMutation> propertyDeleteMutations,
             Iterable<PropertySoftDeleteMutation> propertySoftDeleteMutations,
+            Iterable<SetPropertyMetadata> setPropertyMetadatas,
             Iterable<Visibility> hiddenVisibilities,
             long timestamp,
             Authorizations authorizations
@@ -49,7 +47,7 @@ public abstract class ElementBase implements Element {
                 this.hiddenVisibilities.add(v);
             }
         }
-        updatePropertiesInternal(properties, propertyDeleteMutations, propertySoftDeleteMutations);
+        updatePropertiesInternal(properties, propertyDeleteMutations, propertySoftDeleteMutations, setPropertyMetadatas);
     }
 
     @Override
@@ -257,7 +255,8 @@ public abstract class ElementBase implements Element {
     protected void updatePropertiesInternal(
             Iterable<Property> properties,
             Iterable<PropertyDeleteMutation> propertyDeleteMutations,
-            Iterable<PropertySoftDeleteMutation> propertySoftDeleteMutations
+            Iterable<PropertySoftDeleteMutation> propertySoftDeleteMutations,
+            Iterable<SetPropertyMetadata> setPropertyMetadatas
     ) {
         if (propertyDeleteMutations != null) {
             this.propertyDeleteMutations = new ConcurrentSkipListSet<>();
@@ -284,6 +283,15 @@ public abstract class ElementBase implements Element {
 
         for (Property property : properties) {
             addPropertyInternal(property);
+        }
+
+        if (setPropertyMetadatas != null) {
+            for (SetPropertyMetadata setPropertyMetadata : setPropertyMetadatas) {
+                Property p = getProperty(setPropertyMetadata.getPropertyKey(), setPropertyMetadata.getPropertyName(), setPropertyMetadata.getPropertyVisibility());
+                if (p != null) {
+                    p.getMetadata().add(setPropertyMetadata.getMetadataKey(), setPropertyMetadata.getNewValue(), setPropertyMetadata.getMetadataVisibility());
+                }
+            }
         }
     }
 

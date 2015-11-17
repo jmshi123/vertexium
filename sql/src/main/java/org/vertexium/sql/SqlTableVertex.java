@@ -152,6 +152,11 @@ public class SqlTableVertex extends SqlTableElement<InMemoryVertex> {
         }
 
         @Override
+        public void appendSetPropertyMetadataMutation(String propertyKey, String propertyName, Visibility propertyVisibility, String metadataKey, Visibility metadataVisibility, Object newValue, Long timestamp) {
+            sqlTableVertex.appendSetPropertyMetadataMutation(propertyKey, propertyName, propertyVisibility, metadataKey, metadataVisibility, newValue, timestamp);
+        }
+
+        @Override
         public void appendAlterEdgeLabelMutation(String newEdgeLabel) {
             sqlTableVertex.appendAlterEdgeLabelMutation(newEdgeLabel);
         }

@@ -12,6 +12,7 @@ import org.vertexium.accumulo.util.DataInputStreamUtils;
 import org.vertexium.mutation.ExistingEdgeMutation;
 import org.vertexium.mutation.PropertyDeleteMutation;
 import org.vertexium.mutation.PropertySoftDeleteMutation;
+import org.vertexium.mutation.SetPropertyMetadata;
 
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
@@ -41,6 +42,7 @@ public class AccumuloEdge extends AccumuloElement implements Edge {
             Iterable<Property> properties,
             Iterable<PropertyDeleteMutation> propertyDeleteMutations,
             Iterable<PropertySoftDeleteMutation> propertySoftDeleteMutations,
+            Iterable<SetPropertyMetadata> setPropertyMetadatas,
             Iterable<Visibility> hiddenVisibilities,
             long timestamp,
             Authorizations authorizations
@@ -52,6 +54,7 @@ public class AccumuloEdge extends AccumuloElement implements Edge {
                 properties,
                 propertyDeleteMutations,
                 propertySoftDeleteMutations,
+                setPropertyMetadatas,
                 hiddenVisibilities,
                 timestamp,
                 authorizations
@@ -69,6 +72,7 @@ public class AccumuloEdge extends AccumuloElement implements Edge {
             Iterable<Property> properties;
             Iterable<PropertyDeleteMutation> propertyDeleteMutations = new ArrayList<>();
             Iterable<PropertySoftDeleteMutation> propertySoftDeleteMutations = new ArrayList<>();
+            Iterable<SetPropertyMetadata> setPropertyMetadatas = null;
             Iterable<Visibility> hiddenVisibilities;
             Map<String, org.vertexium.accumulo.iterator.model.EdgeInfo> inEdges;
             Map<String, org.vertexium.accumulo.iterator.model.EdgeInfo> outEdges;
@@ -103,6 +107,7 @@ public class AccumuloEdge extends AccumuloElement implements Edge {
                     properties,
                     propertyDeleteMutations,
                     propertySoftDeleteMutations,
+                    setPropertyMetadatas,
                     hiddenVisibilities,
                     timestamp,
                     authorizations

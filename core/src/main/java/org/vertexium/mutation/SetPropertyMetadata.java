@@ -2,21 +2,34 @@ package org.vertexium.mutation;
 
 import org.vertexium.Visibility;
 
-public class SetPropertyMetadata {
+import java.io.Serializable;
+
+public class SetPropertyMetadata implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final String propertyKey;
     private final String propertyName;
     private final Visibility propertyVisibility;
-    private final String metadataName;
+    private final String metadataKey;
     private final Object newValue;
     private final Visibility metadataVisibility;
+    private final long timestamp;
 
-    public SetPropertyMetadata(String propertyKey, String propertyName, Visibility propertyVisibility, String metadataName, Object newValue, Visibility metadataVisibility) {
+    public SetPropertyMetadata(
+            String propertyKey,
+            String propertyName,
+            Visibility propertyVisibility,
+            String metadataKey,
+            Object newValue,
+            Visibility metadataVisibility,
+            long timestamp
+    ) {
         this.propertyKey = propertyKey;
         this.propertyName = propertyName;
         this.propertyVisibility = propertyVisibility;
-        this.metadataName = metadataName;
+        this.metadataKey = metadataKey;
         this.newValue = newValue;
         this.metadataVisibility = metadataVisibility;
+        this.timestamp = timestamp;
     }
 
     public String getPropertyKey() {
@@ -31,8 +44,8 @@ public class SetPropertyMetadata {
         return propertyVisibility;
     }
 
-    public String getMetadataName() {
-        return metadataName;
+    public String getMetadataKey() {
+        return metadataKey;
     }
 
     public Object getNewValue() {
@@ -41,5 +54,9 @@ public class SetPropertyMetadata {
 
     public Visibility getMetadataVisibility() {
         return metadataVisibility;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
     }
 }

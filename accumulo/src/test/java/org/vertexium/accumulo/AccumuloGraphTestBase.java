@@ -1,6 +1,7 @@
 package org.vertexium.accumulo;
 
 import org.apache.accumulo.core.client.*;
+import org.apache.accumulo.core.client.Scanner;
 import org.apache.accumulo.core.data.Key;
 import org.apache.accumulo.core.data.Range;
 import org.apache.accumulo.core.data.Value;
@@ -435,5 +436,40 @@ public abstract class AccumuloGraphTestBase extends GraphTestBase {
     @Override
     public AccumuloGraph getGraph() {
         return (AccumuloGraph) super.getGraph();
+    }
+
+    @Override
+    protected void printTables(Authorizations authorizations) {
+        String[] tables = new String[]{getGraph().getEdgesTableName(), getGraph().getVerticesTableName(), getGraph().getDataTableName()};
+        System.out.println("---------------------------------------------- BEGIN printTable ----------------------------------------------");
+        try {
+            for (String tableName : tables) {
+                System.out.println("TABLE: " + tableName);
+                System.out.println("");
+                Scanner scanner = getGraph().getConnector().createScanner(tableName, getGraph().toAccumuloAuthorizations(authorizations));
+                RowIterator it = new RowIterator(scanner.iterator());
+                while (it.hasNext()) {
+                    boolean first = true;
+                    Text lastColumnFamily = null;
+                    Iterator<Map.Entry<Key, Value>> row = it.next();
+                    while (row.hasNext()) {
+                        Map.Entry<Key, Value> col = row.next();
+                        if (first) {
+                            System.out.println("\"" + col.getKey().getRow() + "\"");
+                            first = false;
+                        }
+                        if (!col.getKey().getColumnFamily().equals(lastColumnFamily)) {
+                            System.out.println("  \"" + col.getKey().getColumnFamily() + "\"");
+                            lastColumnFamily = col.getKey().getColumnFamily();
+                        }
+                        System.out.println(String.format("    \"%s\"[%s]:%d = \"%s\"", col.getKey().getColumnQualifier(), col.getKey().getColumnVisibility(), col.getKey().getTimestamp(), col.getValue()));
+                    }
+                }
+            }
+            System.out.flush();
+        } catch (TableNotFoundException e) {
+            throw new VertexiumException(e);
+        }
+        System.out.println("---------------------------------------------- END printTable ------------------------------------------------");
     }
 }
