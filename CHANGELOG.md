@@ -1,6 +1,7 @@
 # v2.4.4
 
 * Quick Kryo Serializer: add support to compress the bytes after serialization
+* Added interface GraphWithSearchIndex, which GraphBaseWithSearchIndex now implements
 
 # v2.4.3
 

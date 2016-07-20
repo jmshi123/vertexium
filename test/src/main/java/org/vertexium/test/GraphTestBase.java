@@ -963,8 +963,8 @@ public abstract class GraphTestBase {
         assertVertexIds(vertices, new String[]{"v1", "v2"});
         graph.flush();
 
-        if (graph instanceof GraphBaseWithSearchIndex) {
-            ((GraphBaseWithSearchIndex) graph).getSearchIndex().addElements(graph, vertices, AUTHORIZATIONS_A_AND_B);
+        if (graph instanceof GraphWithSearchIndex) {
+            ((GraphWithSearchIndex) graph).getSearchIndex().addElements(graph, vertices, AUTHORIZATIONS_A_AND_B);
             assertVertexIds(graph.query(AUTHORIZATIONS_A_AND_B).has("prop1", "v1").vertices(), new String[]{"v1"});
             assertVertexIds(graph.query(AUTHORIZATIONS_A_AND_B).has("prop1", "v2").vertices(), new String[]{"v2"});
         }
@@ -4579,8 +4579,8 @@ public abstract class GraphTestBase {
     }
 
     private boolean isSearchIndexFieldLevelSecuritySupported() {
-        if (graph instanceof GraphBaseWithSearchIndex) {
-            return ((GraphBaseWithSearchIndex) graph).getSearchIndex().isFieldLevelSecuritySupported();
+        if (graph instanceof GraphWithSearchIndex) {
+            return ((GraphWithSearchIndex) graph).getSearchIndex().isFieldLevelSecuritySupported();
         }
         return true;
     }
@@ -5206,12 +5206,12 @@ public abstract class GraphTestBase {
     }
 
     private boolean isDefaultSearchIndex() {
-        if (!(graph instanceof GraphBaseWithSearchIndex)) {
+        if (!(graph instanceof GraphWithSearchIndex)) {
             return false;
         }
 
-        GraphBaseWithSearchIndex graphBaseWithSearchIndex = (GraphBaseWithSearchIndex) graph;
-        return graphBaseWithSearchIndex.getSearchIndex() instanceof DefaultSearchIndex;
+        GraphWithSearchIndex graphWithSearchIndex = (GraphWithSearchIndex) graph;
+        return graphWithSearchIndex.getSearchIndex() instanceof DefaultSearchIndex;
     }
 
     protected List<Vertex> sortById(List<Vertex> vertices) {
@@ -5291,12 +5291,12 @@ public abstract class GraphTestBase {
 
     protected boolean disableEdgeIndexing(Graph graph) {
         try {
-            if (!(graph instanceof GraphBaseWithSearchIndex)) {
+            if (!(graph instanceof GraphWithSearchIndex)) {
                 LOGGER.debug("Graph does not have a search index");
                 return false;
             }
 
-            SearchIndex searchIndex = ((GraphBaseWithSearchIndex) graph).getSearchIndex();
+            SearchIndex searchIndex = ((GraphWithSearchIndex) graph).getSearchIndex();
 
             Field configField = findPrivateField(searchIndex.getClass(), "config");
             if (configField == null) {
