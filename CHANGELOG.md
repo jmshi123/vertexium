@@ -1,6 +1,7 @@
 # v2.4.4
 
 * Quick Kryo Serializer: add support to compress the bytes after serialization
+* Graph: Remove the comparison of graph in the GraphEvent base class
 
 # v2.4.3
 
